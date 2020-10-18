@@ -14,7 +14,7 @@ def create_dataframe(lag_day,spark):
     '''
     now = date.today()
     history_path = [(now - timedelta(days=i)).strftime("%Y/%m/%d") for i in range(lag_day)]
-    history_path=list(map(lambda x: "/user/iptvqoe/privatedata/multi_dimension/area_all/mi/"+x+"/*",history_path))
+    history_path=list(map(lambda x: "/user/XXXX/yyyyy/zzzz/area_all/mi/"+x+"/*",history_path))
     cols = ['area_code', 'record_date', 'count_time_type', 'online_users', 'play_users', 'good_num', 'over_loss_num',
             'over_lag_num','swtime_num', 'good_swtime_num', 'live_swtime_num', 'good_live_swtime_num', 'areaLagTime', 'areaPlayTime','ts_num']
     df = spark.read.format("csv").option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").load(path=history_path,header=False, sep='|')
@@ -82,8 +82,8 @@ def agg(df):
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
-    output_uri = "mongodb://testUser:test#mongo2O1g@10.135.32.22:27017/test.ResultProphet"
-    input_uri = "mongodb://testUser:test#mongo2O1g@10.135.32.22:27017/test.ResultProphet"
+    output_uri = "mongodb://XXXXX:PASSWORD@**.***.**.**:*****/test.ResultProphet"
+    input_uri = "mongodb://XXXXX:PASSWORD@**.***.**.**:*****/test.ResultProphet"
     spark = SparkSession.builder.appName("prophet5min").config("spark.mongodb.output.uri", output_uri).config("spark.mongodb.input.uri", input_uri).enableHiveSupport().getOrCreate()
     lag_day=3
     logger.debug('=======载入数据=======')
@@ -95,22 +95,8 @@ def main():
     result.write.format('com.mongodb.spark.sql.DefaultSource').mode('overwrite').save()
     now = date.today()+timedelta(days=1)
     history_path =now.strftime("%Y/%m/%d")
-    result.write.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").mode("overwrite").options(header="true").json("/user/iptvqoe/privatedata/alarm2/testEnv/AreaUserResult/"+ history_path)
+    result.write.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").mode("overwrite").options(header="true").json("/user/XXXX/yyyy/alarm2/testEnv/AreaUserResult/"+ history_path)
 
 
 if __name__ == '__main__':
     main()
-
-'''
-spark-submit \
---master yarn-cluster \
---queue queue_iptvqoe  \
---num-executors 10 \
---driver-memory 4g \
---executor-cores 6 \
---executor-memory 9g \
---conf spark.driver.port=50001 \
---conf spark.yarn.dist.archives=hdfs:///user/iptvqoe/spark/envs.zip#py_envs \
---conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=py_envs/envs/py3.6/bin/python \
- /slview/qoezy/lushun1/area_al/prophet_area.py
-'''
