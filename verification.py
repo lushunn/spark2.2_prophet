@@ -9,7 +9,7 @@ def load_pass_dataframe(spark,lag_day=1):
     '''
     now = date.today()
     x = (now - timedelta(days=lag_day)).strftime("%Y/%m/%d")
-    history_path="/user/iptvqoe/privatedata/multi_dimension/area_all/mi/"+x+"/*"
+    history_path="/user/XXXX/yyyy/zzzz/area_all/mi/"+x+"/*"
     cols = ['area_code', 'record_date', 'count_time_type', 'online_users', 'play_users', 'good_num', 'over_loss_num',
             'over_lag_num','swtime_num', 'good_swtime_num', 'live_swtime_num', 'good_live_swtime_num', 'areaLagTime', 'areaPlayTime','ts_num']
     df = spark.read.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").format("csv").load(path=history_path,header=False, sep='|')
@@ -22,7 +22,7 @@ def load_pass_dataframe(spark,lag_day=1):
 def load_predict(spark,lag_day=1):
     now = date.today()
     history_path= (now - timedelta(days=lag_day)).strftime("%Y/%m/%d")
-    df=spark.read.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").format('json').load("/user/iptvqoe/privatedata/alarm2/testEnv/AreaUserResult/"+ history_path)
+    df=spark.read.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").format('json').load("/user/XXXX/yyyy/alarm2/testEnv/AreaUserResult/"+ history_path)
     def helper(x):
         area_code=x["area_code"]
         forecast=x["forecast"]
@@ -49,4 +49,4 @@ if __name__ == '__main__':
     history_path =now.strftime("%Y/%m/%d")
     logger.debug('=======导出=======')
     result=result.where("diff<0")
-    result.write.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").mode("overwrite").options(header="true").csv("/user/iptvqoe/privatedata/alarm2/testEnv/AreaUserResultVerify/"+ history_path)
+    result.write.option("timestampFormat", "yyyy/MM/dd HH:mm:ss ZZ").mode("overwrite").options(header="true").csv("/user/XXXX/yyyy/alarm2/testEnv/AreaUserResultVerify/"+ history_path)
